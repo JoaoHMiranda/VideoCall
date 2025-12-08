@@ -1,0 +1,24 @@
+# --- PYTHON ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- AMBIENTE VIRTUAL (Venv) ---
+# Não queremos enviar milhares de bibliotecas, apenas o requirements.txt
+venv/
+env/
+
+# --- SEGURANÇA (MUITO IMPORTANTE) ---
+# Nunca envie suas chaves e senhas para o Git!
+.env
+certs/
+*.pem
+*.key
+
+# --- SISTEMA OPERACIONAL ---
+.DS_Store
+Thumbs.db
+
+# --- IDEs (Configurações do editor) ---
+.vscode/
+.idea/

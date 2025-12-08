@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VideoCall</title>
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+</head>
+<body>
+
+    <div id="connection-warning" class="warning-banner" style="display: none;">
+        <span class="material-icons">wifi_off</span>
+        <span>Sem conexão! Tentando reconectar...</span>
+    </div>
+
+    <div id="meeting-screen">
+        <div class="header">
+            <h3>VideoCall</h3>
+        </div>
+
+        <div id="videos-grid">
+            </div>
+
+        <div class="controls-container">
+            <div class="controls">
+                <button id="btn-mic" class="control-btn" onclick="toggleAudio()">
+                    <span class="material-icons">mic</span>
+                </button>
+                
+                <button id="btn-end" class="control-btn end-call" onclick="leaveRoom()">
+                    <span class="material-icons">call_end</span>
+                </button>
+
+                <button id="btn-cam" class="control-btn" onclick="toggleVideo()">
+                    <span class="material-icons">videocam</span>
+                </button>
+
+                <button id="btn-filter" class="control-btn off" onclick="toggleVoiceFilter()" title="Modo Estúdio">
+                    <span class="material-icons">auto_fix_high</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="leave-screen" style="display: none;">
+        <div class="leave-content">
+            <span class="material-icons" style="font-size: 60px; color: #ea4335;">videocam_off</span>
+            <h2>Chamada Encerrada</h2>
+            <button class="rejoin-btn" onclick="window.location.reload()">Reconectar</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

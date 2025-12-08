@@ -1,0 +1,6 @@
+flask
+flask-socketio
+pyopenssl
+pyngrok
+simple-websocket
+python-dotenv
