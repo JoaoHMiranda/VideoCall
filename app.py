@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     print("="*60)
     print(" 1. Garanta que o celular está no mesmo Wi-Fi.")
-    # Agora o link sairá limpo, ex: https://192.168.15.4:5000
+    # Agora o link sairá limpo, ex: https://192.168.XX.X:5000
     print(f" 2. Acesse: https://{meu_ip}:5000") 
     print("="*60)
 
