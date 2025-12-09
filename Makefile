@@ -1,5 +1,4 @@
 # --- CARREGA O .ENV (Se existir) ---
-# Necessário que o .env contenha as variáveis CERT_SUBJ e WINDOWS_IP (o valor será sobrescrito)
 -include .env
 export
 
@@ -9,12 +8,11 @@ PYTHON := $(VENV_NAME)/bin/python
 PIP := $(VENV_NAME)/bin/pip
 REQUIREMENTS := requirements.txt
 
-# --- DETECÇÃO AUTOMÁTICA DE IPS (O NOVO MÁGICO) ---
+# --- DETECÇÃO AUTOMÁTICA DE IPS ---
 # 1. Pega o IP interno do Linux (WSL) para a ponte 'netsh'.
 WSL_IP := $(shell hostname -I | cut -d' ' -f1)
 
 # 2. Detecta o IP do Windows (Wi-Fi) usando ipconfig via PowerShell.
-#    Busca o adaptador Wi-Fi e extrai o endereço IPv4.
 WIN_IP := $(shell powershell.exe -Command "ipconfig" | grep "IPv4" | grep -A 3 "Wi-Fi" | tail -n 1 | awk '{print $$NF}' | tr -d '\r')
 
 # --- REGRAS ---
@@ -29,17 +27,17 @@ run: install certs bridge update-env
 	@echo "=================================================="
 	$(PYTHON) app.py
 
-# 3. CRIA A PONTE NO WINDOWS (Requer UAC/Admin)
+# 3. CRIA A PONTE NO WINDOWS (AGORA COM LIMPEZA AUTOMÁTICA)
 bridge:
 	@echo "--------------------------------------------------"
 	@echo ">>> CONFIGURANDO REDE WINDOWS (Pode pedir senha) <<<"
 	@echo ">>> WSL IP Detectado para ponte: $(WSL_IP)"
-	@echo ">>> Criando ponte na porta 5000..."
-	@powershell.exe -Command "Start-Process powershell -Verb RunAs -ArgumentList 'netsh interface portproxy add v4tov4 listenport=5000 listenaddress=0.0.0.0 connectport=5000 connectaddress=$(WSL_IP); New-NetFirewallRule -DisplayName \"Python Server\" -Direction Inbound -LocalPort 5000 -Protocol TCP -Action Allow -ErrorAction SilentlyContinue'"
-	@echo ">>> Ponte configurada!"
+	@echo ">>> Recriando ponte na porta 5000 (Limpeza + Config)..."
+	@# Executa DELETE (limpa a regra antiga) e ADD (cria a regra nova com o IP atual do WSL)
+	powershell.exe -Command "Start-Process powershell -Verb RunAs -ArgumentList 'netsh interface portproxy delete v4tov4 listenport=5000 listenaddress=0.0.0.0; netsh interface portproxy add v4tov4 listenport=5000 listenaddress=0.0.0.0 connectport=5000 connectaddress=$(WSL_IP); New-NetFirewallRule -DisplayName \"Python Server\" -Direction Inbound -LocalPort 5000 -Protocol TCP -Action Allow -Profile Any -ErrorAction SilentlyContinue'"
+	@echo ">>> Ponte configurada! (Regra de proxy e firewall atualizadas)"
 
 # 4. ATUALIZA O .ENV (100% AUTOMÁTICO)
-# Sobrescreve WINDOWS_IP com o IP Wi-Fi detectado (192.168.15.6)
 update-env:
 	@echo "--------------------------------------------------"
 	@echo ">>> ATUALIZANDO .ENV COM NOVO IP DO WINDOWS: $(WIN_IP)"
